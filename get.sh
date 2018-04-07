@@ -64,6 +64,7 @@ wget https://github.com/jumpserver/luna/releases/download/v1.0.0/luna.tar.gz -O 
 echo "下载luna包出错，请尝试手工执行，如手工操作成功，请注释上述代码再运行本脚本"
 exit 1
 }
+cd /opt
 {
 unzip coco.zip && mv coco-1.0.0 coco && unzip jumpserver.zip && mv jumpserver-1.0.0 jumpserver && tar xzf luna.tar.gz
 } || {
