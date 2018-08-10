@@ -1,25 +1,24 @@
-FROM centos:7
+FROM daocloud.io/library/python:3.6
+RUN sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
 
 # 1. 安装基本依赖
-RUN yum update -y && yum install epel-release -y && yum update -y && yum install wget unzip epel-release nginx sqlite-devel xz gcc automake zlib-devel openssl-devel redis mariadb mariadb-devel mariadb-server supervisor -y
+RUN apt update -y && apt update -y && apt install wget unzip nginx supervisor -y
 WORKDIR /opt/
 
 # 2. 准备python
-RUN wget https://www.python.org/ftp/python/3.6.1/Python-3.6.1.tar.xz -O /opt/Python-3.6.1.tar.xz
-RUN tar xf Python-3.6.1.tar.xz  && cd Python-3.6.1 && ./configure && make && make install
-RUN python3 -m venv py3
 
 # 3. 下载包并解压
-RUN wget https://github.com/jumpserver/jumpserver/archive/master.zip -O /opt/jumpserver.zip
-RUN wget https://github.com/jumpserver/coco/archive/master.zip -O /opt/coco.zip
-RUN wget https://github.com/jumpserver/luna/releases/download/v1.0.0/luna.tar.gz -O /opt/luna.tar.gz
-RUN unzip coco.zip && mv coco-master coco && unzip jumpserver.zip && mv jumpserver-master jumpserver && tar xzf luna.tar.gz
+Add src/jumpserver /opt/jumpserver
+Add src/coco /opt/coco
+Add src/luna /opt/luna
 
-# 4. 安装yum依赖
-RUN yum -y install $(cat /opt/jumpserver/requirements/rpm_requirements.txt) && yum -y install $(cat /opt/coco/requirements/rpm_requirements.txt)
+# 4. 安装apt依赖
+RUN apt -y install $(cat /opt/jumpserver/requirements/deb_requirements.txt) 
+RUN apt -y install $(cat /opt/coco/requirements/deb_requirements.txt)
 
 # 5. 安装pip依赖
-RUN source /opt/py3/bin/activate && pip install --upgrade pip && pip install -r /opt/jumpserver/requirements/requirements.txt &&  pip install -r /opt/coco/requirements/requirements.txt
+RUN pip install -r /opt/jumpserver/requirements/requirements.txt  -i https://pypi.mirrors.ustc.edu.cn/simple
+RUN pip install -r /opt/coco/requirements/requirements.txt  -i https://pypi.mirrors.ustc.edu.cn/simple
 
 VOLUME /opt/coco/keys
 VOLUME /opt/jumpserver/data
@@ -35,4 +34,4 @@ RUN chmod +x /bin/entrypoint.sh
 ENV REDIS_HOST=127.0.0.1 REDIS_PORT=6379
 
 EXPOSE 2222 80
-ENTRYPOINT ["entrypoint.sh"]
+# ENTRYPOINT ["entrypoint.sh"]
