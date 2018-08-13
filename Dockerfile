@@ -34,4 +34,4 @@ RUN chmod +x /bin/entrypoint.sh
 ENV REDIS_HOST=127.0.0.1 REDIS_PORT=6379
 
 EXPOSE 2222 80
-# ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["entrypoint.sh"]

@@ -21,7 +21,7 @@ function make_migrations_if_need(){
 
 function start() {
     make_migrations_if_need
-    supervisord
+    supervisord -c /etc/supervisord.conf
 }
 
 
